@@ -56,7 +56,8 @@ public class Server {
 						Terminal.describesPL(p.name
 								+ " falls to the ground, his eyes staring wide open, his mouth open as if in surprise. He shudders before his body falls still, his eyes blank and unseeing.",
 								p.id);
-						Object obj = Engine.Consumable("dead [corpse] that belonged to " + p.name, "lying on", null, 10);
+						Object obj = Engine.Consumable("dead [corpse] that belonged to " + p.name, "lying on", null,
+								10);
 						obj.injury = Object.type.bruises;
 						obj.holdable = null;
 						obj.reference = p.currentRoom.floor;

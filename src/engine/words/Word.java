@@ -34,6 +34,7 @@ public class Word {
 		represents = func;
 	}
 
+	@SuppressWarnings("unchecked")
 	public java.lang.Object accessPlayerSpecific(Player p) {
 		try {
 			return ((OneParamFuncReturn<Player>) represents).accept(p);

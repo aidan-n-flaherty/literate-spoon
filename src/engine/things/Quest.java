@@ -55,8 +55,7 @@ public class Quest {
 			}
 
 			if (found && print)
-				Terminal.sPrintln(
-						"Return the " + target + " to the " + giver.accessor + " to receive a reward.",
+				Terminal.sPrintln("Return the " + target + " to the " + giver.accessor + " to receive a reward.",
 						protag.id);
 		}
 	}
@@ -77,6 +76,6 @@ public class Quest {
 	}
 
 	public String toString() {
-		return name + (completed ? " [COMPLETE]" : "") + ":\n" + description;
+		return name + (completed ? " [COMPLETE]" : "") + ": " + description;
 	}
 }

@@ -21,7 +21,7 @@ public class Engine {
 	public Room worldMap;
 	public final String worldName = "Azaroth";// just a random name (thank Liam)
 
-	private ArrayList<Word> vocabulary;
+	public ArrayList<Word> vocabulary;
 	private ArrayList<String> prepositions;
 	private ArrayList<String> articles;
 	private ArrayList<String> omitWords;
@@ -102,8 +102,8 @@ public class Engine {
 				Terminal.sPrintln("Intuition tells you that you might want to drink something.", protag.id);
 			}
 		}
-		if (protag.thirst < 20 && protag.hunger < 20 && protag.health != 0) {
-			protag.health += protag.health < protag.maxHealth && protag.health > 0 ? 1 : 0;
+		if (protag.thirst < 20 && protag.hunger < 20 && protag.health > 0) {
+			protag.health += protag.health < protag.maxHealth ? 1 : 0;
 		}
 	}
 
@@ -358,13 +358,7 @@ public class Engine {
 		if (protag.health <= 0) {
 			int s = objectQueue.size();
 			protag.death.accept(this);
-			Iterator<Object> it = protag.inventory.iterator();
-			while(it.hasNext()) {
-				Object o = it.next();
-				if(o.abstractObj) {
-					it.remove();
-				}
-			}
+			protag.inventory.removeIf((o) -> o.abstractObj);
 			if (objectQueue.size() != s) {
 				objectQueue.get(s).container.addAll(protag.inventory);
 			} else {
@@ -418,18 +412,19 @@ public class Engine {
 						}
 						try {
 							for (int i = 0; i < Server.out.length; i++) {
-								if(protags.get(i) != null) {
-								if (protags.get(i).id != protag.id
-										&& protags.get(i).currentRoom == protag.currentRoom) {
-									Terminal.sPrintln(protag.name + " entered the room.", protags.get(i).id);
-								} else if (protags.get(i).id != protag.id
-										&& protags.get(i).currentRoom.coords == protag.roomCache.coords) {
-									Terminal.sPrintln(protag.name + " left the room.", protags.get(i).id);
-								}
-								if (protags.get(i).id != protag.id
-										&& protags.get(i).currentRoom == protag.currentRoom && protags.get(i).currentRoom.coords != protag.roomCache.coords) {
-									Terminal.sPrintln(protags.get(i).name + " is in the room.", protag.id);
-								}
+								if (protags.get(i) != null) {
+									if (protags.get(i).id != protag.id
+											&& protags.get(i).currentRoom == protag.currentRoom) {
+										Terminal.sPrintln(protag.name + " entered the room.", protags.get(i).id);
+									} else if (protags.get(i).id != protag.id
+											&& protags.get(i).currentRoom.coords == protag.roomCache.coords) {
+										Terminal.sPrintln(protag.name + " left the room.", protags.get(i).id);
+									}
+									if (protags.get(i).id != protag.id
+											&& protags.get(i).currentRoom == protag.currentRoom
+											&& protags.get(i).currentRoom.coords != protag.roomCache.coords) {
+										Terminal.sPrintln(protags.get(i).name + " is in the room.", protag.id);
+									}
 								}
 							}
 						} catch (NullPointerException e) {
@@ -463,12 +458,12 @@ public class Engine {
 					break;
 				}
 				userText = userText.toLowerCase();
-				for(int i = 0; i < Server.out.length; i++) {
-					if(protags.get(i) != null) {
-					userText = userText.replace(" " + protags.get(i).name.toLowerCase(), " " + protags.get(i).accessor);
+				for (int i = 0; i < Server.out.length; i++) {
+					if (protags.get(i) != null) {
+						userText = userText.replace(" " + protags.get(i).name.toLowerCase(),
+								" " + protags.get(i).accessor);
 					}
 				}
-				
 
 				for (String str : omitWords) {
 					userText = userText.replace(" " + str + " ", " ");
@@ -635,19 +630,19 @@ public class Engine {
 					}
 				}
 				for (Object o : protag.currentRoom.objects) {
-						if (o.accessor.equals(words.get(1))) {
-							o1 = o;
+					if (o.accessor.equals(words.get(1))) {
+						o1 = o;
+						foundObject = true;
+					}
+					if (words.size() > 2 && o.accessor.equals(words.get(2))) {
+						o2 = o;
+					}
+					for (Object obj : o.container) {
+						if (obj.accessor.equals(words.get(1))) {
+							o1 = obj;
 							foundObject = true;
 						}
-						if (words.size() > 2 && o.accessor.equals(words.get(2))) {
-							o2 = o;
-						}
-						for (Object obj : o.container) {
-							if (obj.accessor.equals(words.get(1))) {
-								o1 = obj;
-								foundObject = true;
-							}
-						}
+					}
 				}
 
 				for (Object o : protag.inventory) {
@@ -705,7 +700,7 @@ public class Engine {
 						continue;
 					}
 				}
-				
+
 				if (found) {
 					try {
 						w0.perform(w1, prepUsed[0], this, protag);// fills out word's function

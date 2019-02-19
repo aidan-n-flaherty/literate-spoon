@@ -21,7 +21,7 @@ public class Main extends Thread {
 
 	public Main() {
 		game = new Engine();
-		
+
 		game.addWord(
 				new Verb("move go walk run climb jog travel journey venture", (Word w, Engine t, Player protag) -> {
 					if (w.getClass() != Direction.class) {
@@ -155,10 +155,25 @@ public class Main extends Thread {
 		game.addWord(new Verb("inspect investigate examine scrutinize study observe look e",
 				(Word w, Engine t, Player protag) -> {
 					if (w.accessPlayerSpecific(protag) == (java.lang.Object) protag.inventory) {
-						Terminal.sPrintln("Try checking your inventory instead.", protag.id);
-						
+						for (Word word : game.vocabulary) {
+							if (word.checkWord("check")) {
+								for (Word obj : game.vocabulary) {
+									if (obj.checkWord("inventory")) {
+										word.perform(obj, null, t, protag);
+									}
+								}
+							}
+						}
 					} else if (w.accessPlayerSpecific(protag) == (java.lang.Object) protag.quests) {
-						Terminal.sPrintln("Try checking your quests instead.", protag.id);
+						for (Word word : game.vocabulary) {
+							if (word.checkWord("check")) {
+								for (Word obj : game.vocabulary) {
+									if (obj.checkWord("quests")) {
+										word.perform(obj, null, t, protag);
+									}
+								}
+							}
+						}
 					} else if (((String) w.represents).equals("room")) {
 						t.inspectRoom(false, protag.roomCache, protag);
 					}
@@ -376,7 +391,7 @@ public class Main extends Thread {
 				}
 
 				if (realStuff.isEmpty()) {
-					Terminal.sPrint("You have nothing in your inventory.", protag.id);
+					Terminal.sPrint("You have nothing in your inventory", protag.id);
 				} else {
 					Terminal.sPrint("You have a " + realStuff.get(0).compSub, protag.id);
 					if (realStuff.size() == 2) {
@@ -509,31 +524,32 @@ public class Main extends Thread {
 							Terminal.sPrintln("Restart? [y] [n]", b);
 							try {
 								String s = Server.in[b].readLine();
-								if(s.equals("y")) {
+								if (s.equals("y")) {
 									Terminal.sPrintln("What is your new name?", b);
 									String name = Server.in[b].readLine();
-									if(name.matches("[a-zA-Z]+") && name.length() <= 10) {
-									Player p = new Player(0, 0, b, game.capitalize(name));
-									p.setHealth(100);
-									p.injury = type.bruises;
-									p.currentRoom = game.startingRoom;
-									p.currentRoom.objects.add(p);
-									p.roomCache = p.currentRoom.getClone();
-									p.death = (Engine e) -> {
-										Terminal.describesPL(p.name
-												+ " falls to the ground, his eyes staring wide open, his mouth open as if in surprise. He shudders before his body falls still, his eyes blank and unseeing.",
-												p.id);
-										Object obj = Engine.Consumable("dead [corpse] that belonged to " + p.name, "lying on", null, 10);
-										obj.injury = Object.type.bruises;
-										obj.holdable = null;
-										obj.reference = p.currentRoom.floor;
-										e.objectQueue.add(obj);
-									};
-									game.protags.set(b, p);
-								} else {
-									Terminal.sPrintln("That's not a name.", b);
-								}	
-								} else if(s.equals("n")){
+									if (name.matches("[a-zA-Z]+") && name.length() <= 10) {
+										Player p = new Player(0, 0, b, game.capitalize(name));
+										p.setHealth(100);
+										p.injury = type.bruises;
+										p.currentRoom = game.startingRoom;
+										p.currentRoom.objects.add(p);
+										p.roomCache = p.currentRoom.getClone();
+										p.death = (Engine e) -> {
+											Terminal.describesPL(p.name
+													+ " falls to the ground, his eyes staring wide open, his mouth open as if in surprise. He shudders before his body falls still, his eyes blank and unseeing.",
+													p.id);
+											Object obj = Engine.Consumable("dead [corpse] that belonged to " + p.name,
+													"lying on", null, 10);
+											obj.injury = Object.type.bruises;
+											obj.holdable = null;
+											obj.reference = p.currentRoom.floor;
+											e.objectQueue.add(obj);
+										};
+										game.protags.set(b, p);
+									} else {
+										Terminal.sPrintln("That's not a name.", b);
+									}
+								} else if (s.equals("n")) {
 									Server.out[b].println("DESTROY");
 								}
 							} catch (IOException e) {

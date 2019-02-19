@@ -112,7 +112,8 @@ public class Window extends Application {
 				input2.setOnKeyReleased(new EventHandler<KeyEvent>() {
 					@Override
 					public void handle(KeyEvent ke) {
-						if (ke.getCode().equals(KeyCode.ENTER) && input2.getText().matches("[a-zA-Z]+") && input2.getText().length() <= 10) {
+						if (ke.getCode().equals(KeyCode.ENTER) && input2.getText().matches("[a-zA-Z]+")
+								&& input2.getText().length() <= 10) {
 							try {
 								String serverName = input.getText();
 								int port = 4444;
@@ -138,7 +139,6 @@ public class Window extends Application {
 					}
 				});
 			}
-
 		});
 		b2.setOnAction(new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e) {
@@ -163,7 +163,8 @@ public class Window extends Application {
 				input2.setOnKeyReleased(new EventHandler<KeyEvent>() {
 					@Override
 					public void handle(KeyEvent ke) {
-						if (ke.getCode().equals(KeyCode.ENTER) && input2.getText().matches("[a-zA-Z]+") && input2.getText().length() <= 10) {
+						if (ke.getCode().equals(KeyCode.ENTER) && input2.getText().matches("[a-zA-Z]+")
+								&& input2.getText().length() <= 10) {
 							String serverName = "localhost";
 							try {
 								serverName = Inet4Address.getLocalHost().getHostAddress();
@@ -216,49 +217,43 @@ public class Window extends Application {
 				input.setTranslateY(priorScene.getHeight() / 2 - input.getPrefHeight() / 2);
 				input.setOnKeyReleased(new EventHandler<KeyEvent>() {
 					public void handle(KeyEvent ke) {
-						if(ke.getCode().equals(KeyCode.ENTER) && input.getText().matches("[a-zA-Z]+") && input.getText().length() <= 10) {
-						priorRoot.getChildren().clear();
-						Thread thr = new Thread() {
-							public void run() {
-								try {
-									c = new DatagramSocket(8888, InetAddress.getByName("0.0.0.0"));
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
-								VBox servers = new VBox();
-								Platform.runLater(() -> priorRoot.getChildren().add(servers));
-								while (true) {
-									byte[] recvBuf = new byte[15000];
-									DatagramPacket receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
+						if (ke.getCode().equals(KeyCode.ENTER) && input.getText().matches("[a-zA-Z]+")
+								&& input.getText().length() <= 10) {
+							priorRoot.getChildren().clear();
+							Thread thr = new Thread() {
+								public void run() {
 									try {
-										c.receive(receivePacket);
-									} catch (IOException e3) {
-										e3.printStackTrace();
+										c = new DatagramSocket(8888, InetAddress.getByName("0.0.0.0"));
+									} catch (Exception e) {
+										e.printStackTrace();
 									}
-
-									String message = new String(receivePacket.getData()).trim();
-									final String serverName;
-									if (message.contains("serverLANBroadcast")) {
-										serverName = receivePacket.getAddress().getHostAddress();
-									} else {
-										serverName = "localhost";
-									}
-
-									boolean alreadyHave = false;
-									for (Node n : servers.getChildren()) {
-										Label l = (Label) n;
-										if (l.getText().contains(serverName)) {
-											alreadyHave = true;
+									VBox servers = new VBox();
+									Platform.runLater(() -> priorRoot.getChildren().add(servers));
+									while (true) {
+										servers.getChildren().clear();
+										byte[] recvBuf = new byte[15000];
+										DatagramPacket receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
+										try {
+											c.receive(receivePacket);
+										} catch (IOException e3) {
+											e3.printStackTrace();
 										}
-									}
-									if (!alreadyHave) {
+
+										String message = new String(receivePacket.getData()).trim();
+										final String serverName;
+										if (message.contains("serverLANBroadcast")) {
+											serverName = receivePacket.getAddress().getHostAddress();
+										} else {
+											serverName = "localhost";
+										}
+
 										Label l = new Label("Server hosted at " + serverName + ", "
 												+ message.replace("serverLANBroadcast", "") + " players");
 										l.setPrefWidth(priorRoot.getWidth());
 										l.setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID,
 												null, new BorderWidths(1))));
-										l.setBackground(new Background(new BackgroundFill(new Color(0.5, 0.5, 0.5, 1.0),
-												CornerRadii.EMPTY, Insets.EMPTY)));
+										l.setBackground(new Background(new BackgroundFill(
+												new Color(0.75, 0.75, 0.75, 1.0), CornerRadii.EMPTY, Insets.EMPTY)));
 										Platform.runLater(() -> servers.getChildren().add(l));
 										l.setOnMouseClicked(new EventHandler<MouseEvent>() {
 											@Override
@@ -283,12 +278,12 @@ public class Window extends Application {
 												}
 											}
 										});
+
 									}
 								}
-							}
-						};
-						thr.start();
-					}
+							};
+							thr.start();
+						}
 					}
 				});
 			}
@@ -404,6 +399,7 @@ public class Window extends Application {
 		};
 		thr.start();
 	}
+
 	public Thread runThread(Thread t) {
 		t = new Thread() {
 			public void run() {
@@ -413,21 +409,17 @@ public class Window extends Application {
 						try {
 							int i = Integer.parseInt(s.substring(0, 1));
 							String[] strs = s.split(",");
-							Platform.runLater(
-									() -> Window.gp.add(new Label(strs[2]),
-											Integer.parseInt(strs[0]),
-											Integer.parseInt(strs[1])));
+							Platform.runLater(() -> Window.gp.add(new Label(strs[2]), Integer.parseInt(strs[0]),
+									Integer.parseInt(strs[1])));
 						} catch (Exception e) {
 							if (s.contains("CLEARMAP")) {
-								Platform.runLater(() -> Window.gp
-										.getChildren().clear());
+								Platform.runLater(() -> Window.gp.getChildren().clear());
 							} else if (s.contains("[PRINT]")) {
 								Terminal.print(s.replace("[PRINT]", ""));
 							} else if (s.contains("[PRINTLN]")) {
-								Terminal.println(
-										s.replace("[PRINTLN]", ""));
-							} else if(s.equals("DESTROY")) {
-								System.exit(0);
+								Terminal.println(s.replace("[PRINTLN]", ""));
+							} else if (s.equals("DESTROY")) {
+								Platform.exit();
 							}
 						}
 					}

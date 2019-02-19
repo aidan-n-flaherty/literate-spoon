@@ -53,6 +53,7 @@ public class Terminal {
 			}
 		}
 	}
+
 	public static void broadcast(Object s, String[] ending, int id) {
 		if (printing) {
 			for (int i = 0; i < Server.out.length; i++) {
@@ -72,7 +73,8 @@ public class Terminal {
 						if (s.toString().contains("player" + i)) {
 							Server.out[i].println("[PRINTLN]" + s.toString().replace("the player" + i, "you"));
 						} else {
-							Server.out[i].println("[PRINTLN]" + s.toString().replace("the player" + id, Main.game.protags.get(i).name));
+							Server.out[i].println("[PRINTLN]"
+									+ s.toString().replace("the player" + id, Main.game.protags.get(i).name));
 						}
 						Server.out[i].flush();
 					}
@@ -89,7 +91,8 @@ public class Terminal {
 						if (s.toString().contains("player" + i)) {
 							Server.out[i].println("[PRINT]" + s.toString().replace("the player" + i, "you"));
 						} else {
-							Server.out[i].println("[PRINT]" + s.toString().replace("the player" + id, Main.game.protags.get(i).name));
+							Server.out[i].println(
+									"[PRINT]" + s.toString().replace("the player" + id, Main.game.protags.get(i).name));
 						}
 						Server.out[i].flush();
 					}
