@@ -28,8 +28,8 @@ public class Room implements Cloneable {
 		coords[1] = y;
 		area = new Object[width][height];
 		floor.label = '#';
-		for(Object[] objs : area) {
-			for(int i = 0; i < objs.length; i++) {
+		for (Object[] objs : area) {
+			for (int i = 0; i < objs.length; i++) {
 				objs[i] = floor;
 			}
 		}
@@ -46,7 +46,8 @@ public class Room implements Cloneable {
 		try {
 			o.reference.x = o.x;
 			o.reference.y = o.y;
-		} catch(Exception e) {}
+		} catch (Exception e) {
+		}
 	}
 
 	public void addRoom(Room r) {

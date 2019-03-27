@@ -1,23 +1,15 @@
 package engine;
 
 import javafx.application.Platform;
-import javafx.geometry.Insets;
 import javafx.animation.*;
 import javafx.util.Duration;
 import javafx.scene.text.TextFlow;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
+import javafx.scene.effect.Effect;
+import javafx.scene.effect.Glow;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.ClosePath;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
 import javafx.scene.text.Text;
-import javafx.scene.text.FontWeight;
 
 public class Terminal {
 	static TextFlow flow = new TextFlow();
@@ -29,6 +21,7 @@ public class Terminal {
 	public static Font passageFont;
 	public static Font mapFont;
 	public static Engine t;
+
 	public Terminal() {
 		titleFont = Font.loadFont(this.getClass().getResource("fonts/ailerons.otf").toExternalForm(), 35);
 		mapFont = Font.font("Courier", 20);
@@ -111,6 +104,8 @@ public class Terminal {
 			Platform.runLater(() -> {
 				Text t = new Text(Window.enterStack + strs[0]);
 				t.setFill(Color.gray(0.8));
+				Effect glow = new Glow(10.0);
+				t.setEffect(glow);
 				if (ti) {
 					t.setFont(titleFont);
 				} else if (bo) {
@@ -150,7 +145,8 @@ public class Terminal {
 				for (int x = 0; x < t.protag.currentRoom.area.length; x++) {
 					for (int y = 0; y < t.protag.currentRoom.area[x].length; y++) {
 						Label l = new Label(t.protag.x == x && t.protag.y == y ? "@"
-								: t.protag.currentRoom.area[x][y] != null ? String.valueOf(t.protag.currentRoom.area[x][y].label)
+								: t.protag.currentRoom.area[x][y] != null
+										? String.valueOf(t.protag.currentRoom.area[x][y].label)
 										: "~");
 						l.setFont(mapFont);
 						l.setTextFill(Color.gray(0.8));
@@ -180,6 +176,8 @@ public class Terminal {
 					Platform.runLater(() -> {
 						Text t = new Text(Window.enterStack + strs[o + 1]);
 						t.setFill(Color.gray(0.8));
+						Effect glow = new Glow(10.0);
+						t.setEffect(glow);
 						if (ti) {
 							t.setFont(titleFont);
 						} else if (bo) {

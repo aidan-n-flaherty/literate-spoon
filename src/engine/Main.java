@@ -26,75 +26,78 @@ public class Main extends Thread {
 			if (w.getClass() != Direction.class) {
 				Terminal.println("...What?");
 				return;
-			}try {
-			int x, y;
+			}
+			try {
+				int x, y;
 
-			int dx = Integer.parseInt(w.value.substring(0, 1)) - 1;
-			int dy = Integer.parseInt(w.value.substring(1, 2)) - 1;
-			ArrayList<Node> gp = new ArrayList<>();
-			synchronized(Window.gp) {
-				gp = new ArrayList<>(Window.gp.getChildren());
-			}
-			double pX = 0;
-			double pY = 0;
-			Node playerNode = null;
-			for (Node n : gp) {
-				try {
-					Label l = (Label) n;
-					if (l.getText().equals("@")) {
-						pX = Window.gp.localToParent(n.getBoundsInParent()).getMinX() + dx * 100;
-						pY = Window.gp.localToParent(n.getBoundsInParent()).getMinY() + dy * 100;
-						playerNode = n;
-					}
-				} catch (Exception e) {
+				int dx = Integer.parseInt(w.value.substring(0, 1)) - 1;
+				int dy = Integer.parseInt(w.value.substring(1, 2)) - 1;
+				ArrayList<Node> gp = new ArrayList<>();
+				synchronized (Window.gp) {
+					gp = new ArrayList<>(Window.gp.getChildren());
 				}
-			}
-			double closest = 100;
-			Node closestNode = null;
-			for (Node n : gp) {
-				if (n != playerNode && GridPane.getColumnIndex(n) > t.protag.x - 2
-						&& GridPane.getColumnIndex(n) < t.protag.x + 2 && GridPane.getRowIndex(n) > t.protag.y - 2
-						&& GridPane.getRowIndex(n) < t.protag.y + 2) {
-					double deltaX = Window.gp.localToParent(n.getBoundsInParent()).getMinX() - pX;
-					double deltaY = Window.gp.localToParent(n.getBoundsInParent()).getMinY() - pY;
-					double deltaMag = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-					if (deltaMag < closest) {
-						closestNode = n;
-						closest = deltaMag;
+				double pX = 0;
+				double pY = 0;
+				Node playerNode = null;
+				for (Node n : gp) {
+					try {
+						Label l = (Label) n;
+						if (l.getText().equals("@")) {
+							pX = Window.gp.localToParent(n.getBoundsInParent()).getMinX() + dx * 100;
+							pY = Window.gp.localToParent(n.getBoundsInParent()).getMinY() + dy * 100;
+							playerNode = n;
+						}
+					} catch (Exception e) {
 					}
 				}
-			}
-			dx = GridPane.getColumnIndex(closestNode) - GridPane.getColumnIndex(playerNode);
-			dy = GridPane.getRowIndex(closestNode) - GridPane.getRowIndex(playerNode);
-			t.protag.x += dx;
-			t.protag.y += dy;
-
-			x = t.protag.currentRoom.coords[0];
-			y = t.protag.currentRoom.coords[1];
-
-			Room cR = t.protag.currentRoom;
-			if (t.protag.x < 0 || t.protag.y < 0 || t.protag.x >= cR.area.length || t.protag.y >= cR.area[0].length) {
-				t.protag.x -= dx;
-				t.protag.y -= dy;
-
-				for (Room r : t.protag.currentRoom.fatherRoom.nestedMap) {
-					if (x + dx == r.coords[0] && y + dy == r.coords[1]) {
-						t.protag.currentRoom = r;
-						t.changedRoom = true;
-						return;
+				double closest = 100;
+				Node closestNode = null;
+				for (Node n : gp) {
+					if (n != playerNode && GridPane.getColumnIndex(n) > t.protag.x - 2
+							&& GridPane.getColumnIndex(n) < t.protag.x + 2 && GridPane.getRowIndex(n) > t.protag.y - 2
+							&& GridPane.getRowIndex(n) < t.protag.y + 2) {
+						double deltaX = Window.gp.localToParent(n.getBoundsInParent()).getMinX() - pX;
+						double deltaY = Window.gp.localToParent(n.getBoundsInParent()).getMinY() - pY;
+						double deltaMag = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+						if (deltaMag < closest) {
+							closestNode = n;
+							closest = deltaMag;
+						}
 					}
 				}
+				dx = GridPane.getColumnIndex(closestNode) - GridPane.getColumnIndex(playerNode);
+				dy = GridPane.getRowIndex(closestNode) - GridPane.getRowIndex(playerNode);
+				t.protag.x += dx;
+				t.protag.y += dy;
 
-				Terminal.println("You can't move that way.");
-				return;
-			} else {
-				t.changedLocation = true;
-				return;
+				x = t.protag.currentRoom.coords[0];
+				y = t.protag.currentRoom.coords[1];
+
+				Room cR = t.protag.currentRoom;
+				if (t.protag.x < 0 || t.protag.y < 0 || t.protag.x >= cR.area.length
+						|| t.protag.y >= cR.area[0].length) {
+					t.protag.x -= dx;
+					t.protag.y -= dy;
+
+					for (Room r : t.protag.currentRoom.fatherRoom.nestedMap) {
+						if (x + dx == r.coords[0] && y + dy == r.coords[1]) {
+							t.protag.currentRoom = r;
+							t.changedRoom = true;
+							return;
+						}
+					}
+
+					Terminal.println("You can't move that way.");
+					return;
+				} else {
+					t.changedLocation = true;
+					return;
+				}
+			} catch (Exception e) {
 			}
-			} catch(Exception e) {}
 		}, null, null, null));
 
-		game.addWord(new Verb("eat consume", null, (Object o, Engine t) ->{
+		game.addWord(new Verb("eat consume", null, (Object o, Engine t) -> {
 			if (o.abstractObj) {
 				Terminal.println("Impossible.");
 				return;
@@ -122,7 +125,7 @@ public class Main extends Thread {
 				throw new NullPointerException();
 			}
 
-		}, null, (Object o, Engine t)-> {
+		}, null, (Object o, Engine t) -> {
 			Terminal.println("Your physical limitations prevent you from consuming the " + o.compSub + ".");
 		}));
 
@@ -142,7 +145,7 @@ public class Main extends Thread {
 			} else {
 				throw new NullPointerException();
 			}
-		}, null, (Object o, Engine t)-> {
+		}, null, (Object o, Engine t) -> {
 			Terminal.println("You aren't able to drink the " + o.compSub + ".");
 		}));
 
@@ -191,7 +194,7 @@ public class Main extends Thread {
 				Terminal.print(" inside the " + o.accessor);
 			}
 			Terminal.println(".");
-		}, null, (Object o, Engine t)-> {
+		}, null, (Object o, Engine t) -> {
 			Terminal.println("You can't inspect that.");
 		}));
 
@@ -202,7 +205,7 @@ public class Main extends Thread {
 			} else {
 				e.interaction.accept(t.protag, t);
 			}
-		}, null, (Object o, Engine t)-> {
+		}, null, (Object o, Engine t) -> {
 			Terminal.println("You greet the " + o.accessor + ", but it doesn't respond.");
 		}));
 
@@ -232,8 +235,7 @@ public class Main extends Thread {
 						new String[] { "A cry of pain greets your ears.", "The sharp smell of blood fills the air.",
 								"Something cracks.", "A surge of adrenaline shoots through you." }));
 			} else {
-			Terminal.println("You attacked the " + o.accessor + " with the " +
-			t.protag.weapon.accessor + ".");
+				Terminal.println("You attacked the " + o.accessor + " with the " + t.protag.weapon.accessor + ".");
 			}
 		}, (Object o, Object with, Engine t) -> {
 			if (!with.holdable) {
@@ -269,8 +271,7 @@ public class Main extends Thread {
 						new String[] { "A cry of pain greets your ears.", "The sharp smell of blood fills the air.",
 								"Something cracks.", "A surge of adrenaline shoots through you." }));
 			} else {
-				Terminal.println("You attacked the " + o.accessor + " with the " +
-						t.protag.weapon.accessor + ".");
+				Terminal.println("You attacked the " + o.accessor + " with the " + t.protag.weapon.accessor + ".");
 			}
 
 		}, "with", null, null, null));
@@ -294,7 +295,7 @@ public class Main extends Thread {
 			} else {
 				throw new NullPointerException();
 			}
-		}, null, (Object o, Engine t)-> {
+		}, null, (Object o, Engine t) -> {
 			Terminal.println("You can't hold the " + o.compSub + ".");
 		}));
 
@@ -311,7 +312,7 @@ public class Main extends Thread {
 					} else {
 						throw new NullPointerException();
 					}
-				}, null, (Object o, Engine t)-> {
+				}, null, (Object o, Engine t) -> {
 					Terminal.println("The " + o.compSub + " doesn't appear to be something you can merely 'take'.");
 				}));
 
@@ -361,7 +362,7 @@ public class Main extends Thread {
 				}
 			}
 
-		}, "to", null, null, (Object gift, Object receiver, Engine t)-> {
+		}, "to", null, null, (Object gift, Object receiver, Engine t) -> {
 			Terminal.println("You cannot give the " + gift.accessor + " to the " + receiver.accessor + ".");
 		}));
 
@@ -399,7 +400,7 @@ public class Main extends Thread {
 					}
 				}
 			}
-		}, null, (Word w, Engine t)-> {
+		}, null, (Word w, Engine t) -> {
 			Terminal.println("You can't check that.");
 		}, null));
 
@@ -445,7 +446,7 @@ public class Main extends Thread {
 									: t.protag.literacy < 8 ? "You can almost read perfectly."
 											: "You're an amazing reader.");
 
-		}, null, (Object o, Engine t)-> {
+		}, null, (Object o, Engine t) -> {
 			Terminal.println("I don't think that the " + o.compSub + " is something that you can read.");
 		}));
 
@@ -460,17 +461,19 @@ public class Main extends Thread {
 		game.addWord(new Direction("east right", "21"));
 		game.addWord(new Direction("west left", "01"));
 	}
+
 	public void addObject(Object o, int x, int y, Room r) {
 		o.x = x;
 		o.y = y;
 		r.area[x][y] = o;
 	}
+
 	public static void removal(Object o, Engine t) {
 		Room r = t.protag.currentRoom;
 		Player p = t.protag;
-		for(Object[] objs : r.area) {
-			for(int i = 0; i < objs.length; i++) {
-				if(objs[i] == o) {
+		for (Object[] objs : r.area) {
+			for (int i = 0; i < objs.length; i++) {
+				if (objs[i] == o) {
 					r.objects.remove(o);
 					p.inventory.remove(o);
 					try {

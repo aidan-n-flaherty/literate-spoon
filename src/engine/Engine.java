@@ -121,6 +121,7 @@ public class Engine {
 	public ArrayList<Object> objectsViewed = new ArrayList<Object>();
 	public float[][] view = new float[1000][1000];
 	int kl = 0;
+
 	public void inspectRoom(boolean updated, Room roomCache) {
 		if (protag.health <= 90) {
 			Terminal.println(protag.health > 50 ? "You are feeling slightly injured."
@@ -147,8 +148,8 @@ public class Engine {
 				f[i] = 0;
 			}
 		}
-		ArrayList<Node> gp = new ArrayList<>();
-		synchronized(Window.gp) {
+		ArrayList<Node> gp;
+		synchronized (Window.gp) {
 			gp = new ArrayList<>(Window.gp.getChildren());
 		}
 		double pX = 0;
@@ -173,10 +174,10 @@ public class Engine {
 						if (protag.currentRoom.area[x][y] != null
 								&& !protag.currentRoom.area[x][y].accessor.equals("floor")) {
 							objectsViewed.add(protag.currentRoom.area[x][y]);
-							if(protag.currentRoom.area[x][y].reference != null) {
+							if (protag.currentRoom.area[x][y].reference != null) {
 								objectsViewed.add(protag.currentRoom.area[x][y].reference);
 							}
-							for(Object o : protag.currentRoom.area[x][y].container) {
+							for (Object o : protag.currentRoom.area[x][y].container) {
 								objectsViewed.add(o);
 							}
 						}
@@ -397,10 +398,10 @@ public class Engine {
 						Entity e = (Entity) o;
 						int s = objectQueue.size();
 						e.death.accept(this);
-						if(objectQueue.size() != s)
+						if (objectQueue.size() != s)
 							objectQueue.get(s).x = e.x;
-							objectQueue.get(s).y = e.y;
-							protag.currentRoom.area[e.x][e.y] = objectQueue.get(s);
+						objectQueue.get(s).y = e.y;
+						protag.currentRoom.area[e.x][e.y] = objectQueue.get(s);
 						for (Object obj : e.inventory) {
 							if (objectQueue.size() != s) {
 								objectQueue.get(s).container.addAll(e.inventory);
@@ -426,7 +427,7 @@ public class Engine {
 
 		protag.currentRoom.objects.addAll(objectQueue);
 	}
-	
+
 	public void distribute(Room r, Object o, Object obj) {
 		int area = 1;
 		int i = 0;
@@ -441,7 +442,7 @@ public class Engine {
 			}
 		}
 	}
-	
+
 	public void update() {
 		String userText;
 		runObjects();

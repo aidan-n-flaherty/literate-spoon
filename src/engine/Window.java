@@ -2,7 +2,6 @@ package engine;
 
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
-import javafx.geometry.Point3D;
 import javafx.geometry.Pos;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -36,6 +35,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.Effect;
+import javafx.scene.effect.Glow;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.text.Font;
@@ -52,14 +53,11 @@ public class Window extends Application {
 	public static AnchorPane root = new AnchorPane();
 	public static GridPane gp = new GridPane();
 	public static double[][] gpTP = new double[1000][1000];
-	public static volatile VBox stack = new VBox();
-	public static volatile VBox map = new VBox();
+	public static volatile VBox stack = new VBox(), map = new VBox();
 	public static volatile String enterStack = "";
 	public boolean skipStart = true; // for quick testing
 	public boolean enterText = false;
-	public static int moveX = 0;
-	public static int moveY = 0;
-	public static int rotation = 0;
+	public static int moveX = 0, moveY = 0, rotation = 0;
 	public double color = 1;
 	public ArrayList<ChangeListener<Number>> rotListen = new ArrayList<ChangeListener<Number>>();
 
@@ -101,6 +99,8 @@ public class Window extends Application {
 		Label label = new Label("Literate Spoon");
 		label.setTextFill(Color.gray(0));
 		label.setFont(Font.font("Futura", 150));
+		Effect glow = new Glow(1.0);
+	    label.setEffect(glow);
 		label.setTranslateY(start.getHeight() / 2 - 100);
 		Label sublabel = new Label("May cause soothing emotions");
 		sublabel.setTextFill(Color.gray(0));
@@ -114,10 +114,10 @@ public class Window extends Application {
 		b.setTranslateY(start.getHeight() / 2 - b.getPrefHeight() / 2);
 		b.setStyle("-fx-focus-color: transparent;-fx-faint-focus-color: transparent;-fx-background-color: #DDDDDD");
 		start.addEventFilter(KeyEvent.KEY_PRESSED, k -> {
-	        if (k.getCode() == KeyCode.SPACE){
-	            k.consume();
-	        }
-	    });
+			if (k.getCode() == KeyCode.SPACE) {
+				k.consume();
+			}
+		});
 		Thread thr = new Thread() {
 			public void run() {
 				Random rand = new Random();
@@ -252,7 +252,7 @@ public class Window extends Application {
 						Terminal.printing = true;
 						return;
 					}
-					ArrayList<Node> gpChildren = new ArrayList<>();
+					final ArrayList<Node> gpChildren;
 					synchronized (gp) {
 						gpChildren = new ArrayList<>(gp.getChildren());
 					}
@@ -310,7 +310,7 @@ public class Window extends Application {
 											- gp.localToParent(n.getBoundsInParent()).getMinX());
 									gp.setTranslateY(gp.getTranslateY() + map.getHeight() / 2
 											- gp.localToParent(n.getBoundsInParent()).getMinY());
-									for (Node n : gp.getChildren()) {
+									for (Node n : gpChildren) {
 										if (gp.localToParent(n.getBoundsInParent()).getMinX() < 0
 												|| gp.localToParent(n.getBoundsInParent()).getMinX() > map.getWidth()
 												|| gp.localToParent(n.getBoundsInParent()).getMinY() < 0

@@ -16,20 +16,21 @@ public class Verb extends Word {
 	private ThreeParamFunc<Object, Object, Engine> myError3;
 	private String joinerWord;
 
-	public Verb(String list, TwoParamFunc<Word, Engine> func, TwoParamFunc<Object, Engine> func2, TwoParamFunc<Word, Engine> error, TwoParamFunc<Object, Engine> error2) {
+	public Verb(String list, TwoParamFunc<Word, Engine> func, TwoParamFunc<Object, Engine> func2,
+			TwoParamFunc<Word, Engine> error, TwoParamFunc<Object, Engine> error2) {
 		super(list);
 
 		myFunc = func;
 		myFunc2 = func2;
 		myError = error;
 		myError2 = error2;
-		
+
 		joinerWord = "";
 	}
 
 	public Verb(String list, TwoParamFunc<Word, Engine> func, TwoParamFunc<Object, Engine> func2,
-			ThreeParamFunc<Object, Object, Engine> func3, String joinerWord, TwoParamFunc<Word, Engine> error, TwoParamFunc<Object, Engine> error2,
-			ThreeParamFunc<Object, Object, Engine> error3) {
+			ThreeParamFunc<Object, Object, Engine> func3, String joinerWord, TwoParamFunc<Word, Engine> error,
+			TwoParamFunc<Object, Engine> error2, ThreeParamFunc<Object, Object, Engine> error3) {
 		super(list);
 
 		myFunc = func;
